@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./style.module.css";
+import { getColorFun } from "../utils/utils";
 
 const Block = ({ digit }) => {
   console.log("🚀 ~ file: Block.js ~ line 5 ~ Block ~ digit", digit);
@@ -7,11 +8,12 @@ const Block = ({ digit }) => {
   return (
     <div
       style={{
-        color: digit !== 0 ? "#746c61" : "",
+        background: getColorFun(digit),
+        color: digit === 2 || digit === 4 ? "#746c61" : "",
       }}
       className={`${block}`}
     >
-      {digit}
+      {digit !== 0 ? digit : ""}
     </div>
   );
 };
