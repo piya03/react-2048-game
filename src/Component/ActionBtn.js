@@ -9,7 +9,8 @@ const ActionBtn = ({ undoFun, redoFun, replayFun, history, activeIndex }) => {
       <button
         style={{
           cursor: history.length === 1 ? "not-allowed" : "pointer",
-          background: history?.length === 1 ? "grey" : "green",
+          background: "transparent",
+          border: "none",
         }}
         onClick={() => {
           if (history?.length > 1) {
@@ -17,13 +18,38 @@ const ActionBtn = ({ undoFun, redoFun, replayFun, history, activeIndex }) => {
           }
         }}
       >
-        Undo
+        <span>
+          {" "}
+          <i
+            style={{
+              fontSize: "45px",
+              color: history?.length === 1 ? "grey" : "white",
+            }}
+            className="fa fa-reply"
+          ></i>
+        </span>
       </button>
-      <button onClick={() => replayFun()}>Replay</button>
+      <button
+        style={{
+          cursor: "pointer",
+          background: "transparent",
+          border: "none",
+        }}
+        onClick={() => replayFun()}
+      >
+        <i
+          style={{
+            fontSize: "45px",
+            color: "white",
+          }}
+          className="fa fa-play"
+        ></i>
+      </button>
       <button
         style={{
           cursor: activeIndex === -1 ? "not-allowed" : "pointer",
-          background: activeIndex === -1 ? "grey" : "green",
+          background: "transparent",
+          border: "none",
         }}
         onClick={() => {
           if (activeIndex >= 0 && history?.length > 1) {
@@ -31,7 +57,14 @@ const ActionBtn = ({ undoFun, redoFun, replayFun, history, activeIndex }) => {
           }
         }}
       >
-        Redo
+        <i
+          style={{
+            fontSize: "45px",
+            color: activeIndex === -1 ? "grey" : "white",
+            transform: "scaleX(-1)",
+          }}
+          className="fa fa-reply"
+        ></i>
       </button>
     </div>
   );

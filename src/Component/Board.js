@@ -47,7 +47,13 @@ const Board = () => {
     activeIndex
   );
 
-  let getBestScoreFromLocal = JSON.parse(localStorage.getItem("info")) || "";
+  let getBestScoreFromLocal = JSON.parse(localStorage.getItem("info")) || {
+    bestScore: 0,
+  };
+  console.log(
+    "🚀 ~ file: Board.js ~ line 51 ~ Board ~ getBestScoreFromLocal",
+    getBestScoreFromLocal
+  );
 
   function setLocalStorage(currentScore) {
     localStorage.setItem(
@@ -107,8 +113,9 @@ const Board = () => {
     console.log("🚀 ~ file: Board.js ~ line 107 ~ undoFun ~ undoArr", undoArr);
 
     if (historyLen === 1) return;
-    if (historyLen > 1) {
+    if (activeIndex === -1 && historyLen > 1) {
       const undoedElem = history[history.length - 1];
+
       console.log(
         "🚀 ~ file: Board.js ~ line 110 ~ undoFun ~ undoedElem",
         undoedElem
@@ -158,6 +165,7 @@ const Board = () => {
     setMove(0);
     setHistory([]);
     setundoedState([]);
+    setCurrentScore(0);
   }
 
   useEffect(() => {
@@ -165,6 +173,7 @@ const Board = () => {
   }, []);
 
   useEffect(() => {
+    console.log("currentScore", currentScore);
     setLocalStorage(currentScore);
   }, [currentScore]);
 

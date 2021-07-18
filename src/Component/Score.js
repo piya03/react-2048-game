@@ -5,7 +5,7 @@ const Score = ({ currentScore, setShowModal }) => {
   const { scoreBox, score_align, info, heading, score, scoreContainer, reset } =
     styles;
 
-  let getBestScoreFromLocal = JSON.parse(localStorage.getItem("info")) || "";
+  let getBestScoreFromLocal = JSON.parse(localStorage.getItem("info")) || {};
 
   return (
     <div>
