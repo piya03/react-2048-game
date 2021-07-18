@@ -22,14 +22,15 @@ export function addTwoOrFourNum(newGrid) {
 export function swipeLeftFun({
   data,
   setData,
+  setHistory,
   IsGridFull = false,
   setCurrentScore,
   setMove,
 }) {
-  console.log("left");
   let oldGrid = data;
   let newArray = _.cloneDeep(data);
   let score = 0;
+  let moveCount = 0;
   for (let i = 0; i < 4; i++) {
     let elem = newArray[i];
     let slow = 0;
@@ -41,26 +42,30 @@ export function swipeLeftFun({
         slow++;
         continue;
       }
-      //  setMove((prev) => prev + 1);
+
       if (elem[slow] === 0 && elem[fast] === 0) {
         fast++;
+        moveCount = 1;
       } else if (elem[slow] === 0 && elem[fast] !== 0) {
         elem[slow] = elem[fast];
         elem[fast] = 0;
         fast++;
+        moveCount = 1;
       } else if (elem[slow] !== 0 && elem[fast] === 0) {
         fast++;
+        moveCount = 1;
       } else if (elem[slow] !== 0 && elem[fast] !== 0) {
         if (elem[slow] === elem[fast]) {
           elem[slow] += elem[fast];
           score += elem[slow];
-          //setCurrentScore((prev) => prev + elem[slow]);
           elem[fast] = 0;
           fast = slow + 1;
           slow++;
+          moveCount = 1;
         } else {
           slow++;
           fast = slow + 1;
+          moveCount = 1;
         }
       }
     }
@@ -69,6 +74,8 @@ export function swipeLeftFun({
 
   if (JSON.stringify(oldGrid) !== JSON.stringify(newArray)) {
     addTwoOrFourNum(newArray);
+    setHistory((prev) => [...prev, [...newArray]]);
+    setMove((prev) => prev + moveCount);
   }
   if (IsGridFull) {
     return newArray;
@@ -81,45 +88,50 @@ export function swipeLeftFun({
 export function swipeRightFun({
   data,
   setData,
+  setHistory,
   IsGridFull = false,
   setCurrentScore,
   setMove,
 }) {
-  console.log("right");
   let oldData = data;
   let newArray = _.cloneDeep(data);
-
   let score = 0;
+  let moveCount = 0;
+
   for (let i = 3; i >= 0; i--) {
     let elem = newArray[i];
     let slow = elem.length - 1;
     let fast = slow - 1;
+
     while (slow > 0) {
       if (fast === -1) {
         fast = slow - 1;
         slow--;
         continue;
       }
-      // setMove((prev) => prev + 1);
       if (elem[slow] === 0 && elem[fast] === 0) {
         fast--;
+        moveCount = 1;
       } else if (elem[slow] === 0 && elem[fast] !== 0) {
         elem[slow] = elem[fast];
         elem[fast] = 0;
         fast--;
+        moveCount = 1;
       } else if (elem[slow] !== 0 && elem[fast] === 0) {
         fast--;
+        moveCount = 1;
       } else if (elem[slow] !== 0 && elem[fast] !== 0) {
         if (elem[slow] === elem[fast]) {
           elem[slow] += elem[fast];
           score += elem[slow];
-          //setCurrentScore((prev) => prev + elem[slow]);
 
           elem[fast] = 0;
           fast = slow - 1;
+          moveCount = 1;
         } else {
           slow--;
           fast = slow - 1;
+          moveCount = 1;
         }
       }
     }
@@ -128,6 +140,8 @@ export function swipeRightFun({
 
   if (JSON.stringify(newArray) !== JSON.stringify(oldData)) {
     addTwoOrFourNum(newArray);
+    setHistory((prev) => [...prev, [...newArray]]);
+    setMove((prev) => prev + moveCount);
   }
 
   if (IsGridFull) {
@@ -142,14 +156,16 @@ export function swipeRightFun({
 export function swipeDownFun({
   data,
   setData,
+  setHistory,
   IsGridFull = false,
   setCurrentScore,
   setMove,
 }) {
-  console.log("downdddddddddd");
   let oldData = data;
   let newArray = _.cloneDeep(data);
   let score = 0;
+  let moveCount = 0;
+
   for (let i = 3; i >= 0; i--) {
     let slow = newArray.length - 1;
     let fast = slow - 1;
@@ -159,27 +175,30 @@ export function swipeDownFun({
         slow--;
         continue;
       }
-      //setMove((prev) => prev + 1);
       if (newArray[slow][i] === 0 && newArray[fast][i] === 0) {
         fast--;
+        moveCount = 1;
       } else if (newArray[slow][i] === 0 && newArray[fast][i] !== 0) {
         newArray[slow][i] = newArray[fast][i];
         newArray[fast][i] = 0;
         fast--;
+        moveCount = 1;
       } else if (newArray[slow][i] !== 0 && newArray[fast][i] === 0) {
         fast--;
+        moveCount = 1;
       } else if (newArray[slow][i] !== 0 && newArray[fast][i] !== 0) {
         if (newArray[slow][i] === newArray[fast][i]) {
           newArray[slow][i] += newArray[fast][i];
           score += newArray[slow][i];
-          // setCurrentScore((prev) => prev + newArray[slow][i]);
 
           newArray[fast][i] = 0;
           fast = slow - 1;
           slow--;
+          moveCount = 1;
         } else {
           slow--;
           fast = slow - 1;
+          moveCount = 1;
         }
       }
     }
@@ -188,6 +207,8 @@ export function swipeDownFun({
 
   if (JSON.stringify(oldData) !== JSON.stringify(newArray)) {
     addTwoOrFourNum(newArray);
+    setHistory((prev) => [...prev, [...newArray]]);
+    setMove((prev) => prev + moveCount);
   }
   if (IsGridFull) {
     return newArray;
@@ -201,14 +222,15 @@ export function swipeDownFun({
 export function swipeUpFun({
   data,
   setData,
+  setHistory,
   IsGridFull = false,
   setCurrentScore,
   setMove,
 }) {
-  console.log("upppp");
   let oldData = data;
   let newArray = _.cloneDeep(data);
   let score = 0;
+  let moveCount = 0;
 
   for (let i = 0; i < 4; i++) {
     let slow = 0;
@@ -219,27 +241,30 @@ export function swipeUpFun({
         slow++;
         continue;
       }
-      //   setMove((prev) => prev + 1);
       if (newArray[slow][i] === 0 && newArray[fast][i] === 0) {
         fast++;
+        moveCount = 1;
       } else if (newArray[slow][i] === 0 && newArray[fast][i] !== 0) {
         newArray[slow][i] = newArray[fast][i];
         newArray[fast][i] = 0;
         fast++;
+        moveCount = 1;
       } else if (newArray[slow][i] !== 0 && newArray[fast][i] === 0) {
         fast++;
+        moveCount = 1;
       } else if (newArray[slow][i] !== 0 && newArray[fast][i] !== 0) {
         if (newArray[slow][i] === newArray[fast][i]) {
           newArray[slow][i] += newArray[fast][i];
           score += newArray[slow][i];
-          // setCurrentScore((prev) => prev + newArray[slow][i]);
 
           newArray[fast][i] = 0;
           fast = slow + 1;
           slow++;
+          moveCount = 1;
         } else {
           slow++;
           fast = slow + 1;
+          moveCount = 1;
         }
       }
     }
@@ -248,6 +273,8 @@ export function swipeUpFun({
 
   if (JSON.stringify(oldData) !== JSON.stringify(newArray)) {
     addTwoOrFourNum(newArray);
+    setHistory((prev) => [...prev, [...newArray]]);
+    setMove((prev) => prev + moveCount);
   }
   if (IsGridFull) {
     return newArray;

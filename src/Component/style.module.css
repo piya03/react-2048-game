@@ -27,6 +27,11 @@
     display: flex;
     justify-content: space-between;
 }
+.scoreContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
 .score_align{
     display: grid;
     grid-template-columns: 90px 90px;
@@ -55,11 +60,22 @@
     background:#b8ae9f;
     padding: 5px 10px;
     color: white;
-    height: 45px;
+    height: 38px;
 }
 .score{
     font-size: 20px;
     font-weight: 600;
+}
+.reset {
+    background: #F1462C;
+    height: 27px;
+    font-weight: 600;
+    color: white;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    cursor: pointer;
 }
 
 
@@ -101,8 +117,49 @@
 }
 
 
+
+
+
+/* modal style */
+.modalContainer{
+    z-index: 1;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    height: 100%;
+    width: 100%;
+  transition: opacity 0.25s ease;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.44) 0% 0% no-repeat padding-box;
+
+}
+
+.modal{
+    background-color: white;
+    width: 300px;
+    padding: 25px;
+    border-radius: 5px;
+}
+
+.modalYesNoContainer{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    color: teal;
+    font-weight: 600;
+}
+.modalYesNoContainer span{
+    cursor: pointer;
+}
 @media only screen and (max-width: 600px) {
     .container {
         height: 100vh;
     }
+   .modal{
+    width: 260px;
+    padding: 22px 25px;
+    font-size: 15px;
+   }
   }

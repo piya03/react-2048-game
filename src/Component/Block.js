@@ -3,7 +3,6 @@ import styles from "./style.module.css";
 import { getColorFun } from "../utils/utils";
 
 const Block = ({ digit }) => {
-  console.log("🚀 ~ file: Block.js ~ line 5 ~ Block ~ digit", digit);
   const { block } = styles;
   return (
     <div
