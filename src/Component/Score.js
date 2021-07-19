@@ -7,7 +7,13 @@ const Score = ({ setShowModal, history }) => {
 
   const currentScore = history[history.length - 1]?.scores;
 
-  let getBestScoreFromLocal = JSON.parse(localStorage.getItem("info")) || {};
+  let getBestScoreAndScore = JSON.parse(localStorage.getItem("info")) || {
+    bestScore: 0,
+    position: [],
+    moves: 0,
+    scores: 0,
+  };
+  console.log(" ~ getBestScoreAndScore", getBestScoreAndScore?.scores);
 
   return (
     <div>
@@ -18,12 +24,14 @@ const Score = ({ setShowModal, history }) => {
           <div className={`${score_align}`}>
             <div>
               <span>Score</span>
-              <span className={`${score}`}>{currentScore}</span>
+              <span className={`${score}`}>
+                {getBestScoreAndScore?.scores || currentScore}
+              </span>
             </div>
             <div>
               <span>Best</span>
               <span className={`${score}`}>
-                {getBestScoreFromLocal?.bestScore}
+                {getBestScoreAndScore?.bestScore}
               </span>{" "}
             </div>
           </div>

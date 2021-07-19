@@ -22,12 +22,32 @@ const Board = () => {
     bgColor,
     modalYesNoContainer,
   } = styles;
-  const [data, setData] = useState([
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-  ]);
+
+  let getInfoFromLocal = JSON.parse(localStorage.getItem("info")) || {
+    bestScore: 0,
+    position: [],
+    moves: 0,
+    scores: 0,
+  };
+  console.log(
+    "🚀 ~ file: Board.js ~ line 51 ~ Board ~ getInfoFromLocal",
+    getInfoFromLocal
+  );
+  console.log(
+    "🚀getInfoFromLocal.positiongetInfoFromLocal.position",
+    getInfoFromLocal.position
+  );
+
+  const [data, setData] = useState(() => {
+    return (
+      getInfoFromLocal?.position || [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+      ]
+    );
+  });
 
   const [undoedState, setundoedState] = useState(null);
   console.log("🚀 ~uuuuuuuuuuuuuuuundo", undoedState);
@@ -35,37 +55,32 @@ const Board = () => {
 
   const [history, setHistory] = useState([]);
   console.log("🚀 hhhhhhhhhhhistory", history);
-
+  const [isDataFromLocal, setIsDataFromLocal] = useState(
+    getInfoFromLocal?.position || false
+  );
+  console.log(
+    "🚀 ~ file: Board.js ~ line 59 ~ Board ~ isDataFromLocal",
+    isDataFromLocal
+  );
   const [gameOver, setGameOver] = useState(false);
 
-  const [move, setMove] = useState(0);
-  const [currentScore, setCurrentScore] = useState(0);
   const [showModal, setShowModal] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(-1);
-  console.log(
-    "🚀 ~ file: Board.js ~ line 45 ~ Board ~ activeIndex",
-    activeIndex
-  );
 
   const [play, setPlay] = useState(false);
-  console.log("🚀 ~ file: Board.js ~ line 51 ~ Board ~ play", play);
 
-  let getBestScoreFromLocal = JSON.parse(localStorage.getItem("info")) || {
-    bestScore: 0,
-  };
-  console.log(
-    "🚀 ~ file: Board.js ~ line 51 ~ Board ~ getBestScoreFromLocal",
-    getBestScoreFromLocal
-  );
-
-  function setLocalStorage(currentScore) {
+  function setLocalStorage() {
+    let lastHistoryData = history.length - 1;
     localStorage.setItem(
       "info",
       JSON.stringify({
         bestScore:
-          currentScore > getBestScoreFromLocal?.bestScore
-            ? currentScore
-            : getBestScoreFromLocal?.bestScore,
+          history[lastHistoryData]?.scores > getInfoFromLocal?.bestScore
+            ? history[lastHistoryData]?.scores
+            : getInfoFromLocal?.bestScore,
+
+        position: history[lastHistoryData]?.position,
+        moves: history[lastHistoryData]?.moves,
+        scores: history[lastHistoryData]?.scores,
       })
     );
   }
@@ -76,39 +91,62 @@ const Board = () => {
   const RIGHT_ARROW = 39;
 
   function initializeFun() {
-    let copyData = _.cloneDeep([
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-    ]);
+    let copyData =
+      getInfoFromLocal?.position ||
+      _.cloneDeep([
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+      ]);
     addTwoOrFourNum(copyData);
     addTwoOrFourNum(copyData);
     setData(copyData);
-    // setHistory((prev) => [...prev, [...copyData]]);
     setHistory((prev) => [
       {
         position: [...copyData],
-        moves: 0,
-        scores: 0,
+        moves: getInfoFromLocal?.moves || 0,
+        scores: getInfoFromLocal?.scores || 0,
       },
     ]);
-    setMove(0);
   }
 
   function handleKeyDown(e) {
     switch (e.keyCode) {
       case UP_ARROW:
-        swipeUpFun({ data, setData, setHistory, setCurrentScore, setMove });
+        swipeUpFun({
+          data,
+          setData,
+          setHistory,
+          setundoedState,
+        });
         break;
       case DOWN_ARROW:
-        swipeDownFun({ data, setData, setHistory, setCurrentScore, setMove });
+        swipeDownFun({
+          data,
+          setData,
+          setHistory,
+
+          setundoedState,
+        });
         break;
       case LEFT_ARROW:
-        swipeLeftFun({ data, setData, setHistory, setCurrentScore, setMove });
+        swipeLeftFun({
+          data,
+          setData,
+          setHistory,
+
+          setundoedState,
+        });
         break;
       case RIGHT_ARROW:
-        swipeRightFun({ data, setData, setHistory, setCurrentScore, setMove });
+        swipeRightFun({
+          data,
+          setData,
+          setHistory,
+
+          setundoedState,
+        });
         break;
       default:
         break;
@@ -124,17 +162,13 @@ const Board = () => {
     let historyLen = history.length;
 
     if (historyLen === 1) return;
-    // if (activeIndex === -1 && historyLen > 1) {
     if (historyLen > 1 && !undoedState) {
       const undoedElem = history[historyLen - 1];
 
       setundoedState(undoedElem);
       const newHistory = _.cloneDeep(history);
 
-      //  const newHistory = [...history];
       newHistory.splice(historyLen - 1);
-
-      // setHistory(newHistory);
 
       setHistory(newHistory);
 
@@ -171,9 +205,35 @@ const Board = () => {
 
   function replayFun(params) {
     console.log("replay");
-    // setInterval(() => {
-    //   handleKeyDown();
-    // }, 2000);
+    const newHistory = _.cloneDeep(history);
+    // for (let i = 0; i < history.length; i++) {
+    //   setTimeout(() => {
+    //     console.log(i, "let see reply");
+    //   }, 2000);
+    // }
+
+    for (let i = 1; i < history.length; i++) {
+      function callReplay(x) {
+        setTimeout(() => {
+          setData([...newHistory[newHistory.length - 1].position]);
+
+          setData(history[i - 1]?.position);
+
+          // setHistory((prev) => {
+          //   return [
+          //     {
+          //       position: history[i - 1]?.position,
+          //       moves: prev[i - 1]?.moves,
+          //       scores: prev[i - 1]?.scores,
+          //     },
+          //   ];
+          // });
+
+          console.log(x, "let s ee reply");
+        }, x * 2000);
+      }
+      callReplay(i);
+    }
   }
 
   function resetGameFun() {
@@ -188,10 +248,29 @@ const Board = () => {
     addTwoOrFourNum(emptyData);
     addTwoOrFourNum(emptyData);
     setData(emptyData);
-    setMove(0);
-    setHistory([]);
-    setundoedState([]);
-    setCurrentScore(0);
+    setHistory([
+      {
+        position: [...emptyData],
+        moves: getInfoFromLocal?.moves || 0,
+        scores: getInfoFromLocal?.scores || 0,
+      },
+    ]);
+    setundoedState(null);
+
+    let lastHistoryData = history.length - 1;
+    localStorage.setItem(
+      "info",
+      JSON.stringify({
+        bestScore:
+          history[lastHistoryData]?.scores > getInfoFromLocal?.bestScore
+            ? history[lastHistoryData]?.scores
+            : getInfoFromLocal?.bestScore,
+
+        position: 0,
+        moves: 0,
+        scores: 0,
+      })
+    );
   }
 
   useEffect(() => {
@@ -199,9 +278,8 @@ const Board = () => {
   }, []);
 
   useEffect(() => {
-    console.log("currentScore", currentScore);
-    setLocalStorage(currentScore);
-  }, [currentScore]);
+    setLocalStorage();
+  }, [history]);
 
   useEvent("keydown", handleKeyDown);
 

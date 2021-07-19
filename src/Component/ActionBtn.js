@@ -46,7 +46,7 @@ const ActionBtn = ({
           border: "none",
         }}
         onClick={() => {
-          setPlay(!play);
+          // setPlay(!play);
           replayFun();
         }}
       >

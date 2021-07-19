@@ -24,8 +24,7 @@ export function swipeLeftFun({
   setData,
   setHistory,
   IsGridFull = false,
-  setCurrentScore,
-  setMove,
+  setundoedState,
 }) {
   let oldGrid = data;
   let newArray = _.cloneDeep(data);
@@ -70,13 +69,11 @@ export function swipeLeftFun({
       }
     }
   }
-  // setCurrentScore((prev) => prev + score);
 
   if (JSON.stringify(oldGrid) !== JSON.stringify(newArray)) {
     addTwoOrFourNum(newArray);
-    // setHistory((prev) => [...prev, [...newArray]]);
-    // setMove((prev) => prev + moveCount);
 
+    setundoedState(null);
     setHistory((prev) => {
       let len = prev.length - 1;
       return [
@@ -102,8 +99,7 @@ export function swipeRightFun({
   setData,
   setHistory,
   IsGridFull = false,
-  setCurrentScore,
-  setMove,
+  setundoedState,
 }) {
   let oldData = data;
   let newArray = _.cloneDeep(data);
@@ -148,12 +144,10 @@ export function swipeRightFun({
       }
     }
   }
-  // setCurrentScore((prev) => prev + score);
 
   if (JSON.stringify(newArray) !== JSON.stringify(oldData)) {
     addTwoOrFourNum(newArray);
-    // setHistory((prev) => [...prev, [...newArray]]);
-    // setMove((prev) => prev + moveCount);
+    setundoedState(null);
     setHistory((prev) => {
       console.log("🚀 setHistory ~ prev1", prev);
       console.log("🚀 setHistory ~ prev2len", prev[prev.length - 1]);
@@ -184,8 +178,7 @@ export function swipeDownFun({
   setData,
   setHistory,
   IsGridFull = false,
-  setCurrentScore,
-  setMove,
+  setundoedState,
 }) {
   let oldData = data;
   let newArray = _.cloneDeep(data);
@@ -229,12 +222,10 @@ export function swipeDownFun({
       }
     }
   }
-  //setCurrentScore((prev) => prev + score);
 
   if (JSON.stringify(oldData) !== JSON.stringify(newArray)) {
     addTwoOrFourNum(newArray);
-    // setHistory((prev) => [...prev, [...newArray]]);
-    // setMove((prev) => prev + moveCount);
+    setundoedState(null);
     setHistory((prev) => {
       let len = prev.length - 1;
       return [
@@ -261,8 +252,7 @@ export function swipeUpFun({
   setData,
   setHistory,
   IsGridFull = false,
-  setCurrentScore,
-  setMove,
+  setundoedState,
 }) {
   let oldData = data;
   let newArray = _.cloneDeep(data);
@@ -306,12 +296,10 @@ export function swipeUpFun({
       }
     }
   }
-  // setCurrentScore((prev) => prev + score);
 
   if (JSON.stringify(oldData) !== JSON.stringify(newArray)) {
     addTwoOrFourNum(newArray);
-    // setHistory((prev) => [...prev, [...newArray]]);
-    //setMove((prev) => prev + moveCount);
+    setundoedState(null);
 
     setHistory((prev) => {
       let len = prev.length - 1;
