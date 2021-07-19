@@ -29,7 +29,7 @@ const Board = () => {
     [0, 0, 0, 0],
   ]);
 
-  const [undoedState, setundoedState] = useState([]);
+  const [undoedState, setundoedState] = useState(null);
   console.log("🚀 ~uuuuuuuuuuuuuuuundo", undoedState);
   console.log("dddddddddddata", data);
 
@@ -46,6 +46,9 @@ const Board = () => {
     "🚀 ~ file: Board.js ~ line 45 ~ Board ~ activeIndex",
     activeIndex
   );
+
+  const [play, setPlay] = useState(false);
+  console.log("🚀 ~ file: Board.js ~ line 51 ~ Board ~ play", play);
 
   let getBestScoreFromLocal = JSON.parse(localStorage.getItem("info")) || {
     bestScore: 0,
@@ -82,7 +85,14 @@ const Board = () => {
     addTwoOrFourNum(copyData);
     addTwoOrFourNum(copyData);
     setData(copyData);
-    setHistory((prev) => [...prev, [...copyData]]);
+    // setHistory((prev) => [...prev, [...copyData]]);
+    setHistory((prev) => [
+      {
+        position: [...copyData],
+        moves: 0,
+        scores: 0,
+      },
+    ]);
     setMove(0);
   }
 
@@ -105,41 +115,57 @@ const Board = () => {
     }
   }
 
+  function checkGameOver(data) {
+    // check if all the cells are filled afte the update
+  }
   ///function undoFun
 
   function undoFun() {
     let historyLen = history.length;
-    let undoArr = history[history.length - 2];
-    console.log("🚀 ~ file: Board.js ~ line 107 ~ undoFun ~ undoArr", undoArr);
 
     if (historyLen === 1) return;
-    if (activeIndex === -1 && historyLen > 1) {
-      const undoedElem = history[history.length - 1];
+    // if (activeIndex === -1 && historyLen > 1) {
+    if (historyLen > 1 && !undoedState) {
+      const undoedElem = history[historyLen - 1];
 
-      console.log(
-        "🚀 ~ file: Board.js ~ line 110 ~ undoFun ~ undoedElem",
-        undoedElem
-      );
+      setundoedState(undoedElem);
+      const newHistory = _.cloneDeep(history);
 
-      setundoedState();
-      //setundoedState((prev) => [...prev, [...undoedElem]]);
+      //  const newHistory = [...history];
+      newHistory.splice(historyLen - 1);
 
-      //setundoedState((prev) => undoedElem);
+      // setHistory(newHistory);
 
-      // undoArr.splice(history.length);
-      setData([...undoArr]);
-      setActiveIndex(history.length - 2);
+      setHistory(newHistory);
+
+      setData([...newHistory[newHistory.length - 1].position]);
     }
   }
 
   function redoFun() {
     let historyLen = history.length;
-    let redoArr = history[activeIndex + 1];
 
-    if (historyLen === 1) return;
-    if (activeIndex >= 0 && historyLen > 1) {
-      setData(redoArr);
-      setActiveIndex(-1);
+    if (historyLen >= 1 && undoedState) {
+      let copyHistory = _.cloneDeep(history);
+
+      const newHistory = [
+        ...copyHistory,
+        {
+          position: undoedState?.position,
+          moves: undoedState?.moves,
+          scores: undoedState?.scores,
+        },
+      ];
+
+      // const newHistory = [...history.position, undoedState];
+
+      //setHistory(newHistory);
+
+      setHistory(newHistory);
+
+      setData([...newHistory[newHistory.length - 1].position]);
+      setundoedState(null);
+      // setActiveIndex(-1);
     }
   }
 
@@ -198,7 +224,7 @@ const Board = () => {
       )}
       <div className={`${container}`}>
         <div className={`${innerContainer}`}>
-          <Score currentScore={currentScore} setShowModal={setShowModal} />
+          <Score history={history} setShowModal={setShowModal} />
           <div className={`${bgColor}`}>
             {data &&
               data?.map((eachRow, index) => {
@@ -212,13 +238,16 @@ const Board = () => {
               })}{" "}
           </div>
         </div>
-        moves {move}
+        <div>moves {history[history?.length - 1]?.moves}</div>
         <ActionBtn
           undoFun={undoFun}
           redoFun={redoFun}
           replayFun={replayFun}
           history={history}
-          activeIndex={activeIndex}
+          isActiveUndo={history.length > 1 && !undoedState}
+          isActiveRedo={undoedState}
+          play={play}
+          setPlay={setPlay}
         />
       </div>
     </>

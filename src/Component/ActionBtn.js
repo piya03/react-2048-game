@@ -1,19 +1,29 @@
 import React from "react";
 import styles from "./style.module.css";
 
-const ActionBtn = ({ undoFun, redoFun, replayFun, history, activeIndex }) => {
+const ActionBtn = ({
+  undoFun,
+  redoFun,
+  replayFun,
+  history,
+  isActiveUndo,
+  isActiveRedo,
+  play,
+  setPlay,
+}) => {
   const { actionBtns } = styles;
-  let checkRedo = activeIndex === 0 && history?.length > 1;
+
+  // const isActiveRedo = !isActiveUndo && history.length > 1;
   return (
     <div className={`${actionBtns}`}>
       <button
         style={{
-          cursor: history.length === 1 ? "not-allowed" : "pointer",
+          cursor: isActiveUndo ? "pointer" : "not-allowed",
           background: "transparent",
           border: "none",
         }}
         onClick={() => {
-          if (history?.length > 1) {
+          if (isActiveUndo) {
             undoFun();
           }
         }}
@@ -23,7 +33,7 @@ const ActionBtn = ({ undoFun, redoFun, replayFun, history, activeIndex }) => {
           <i
             style={{
               fontSize: "45px",
-              color: history?.length === 1 ? "grey" : "white",
+              color: isActiveUndo ? "white" : "grey",
             }}
             className="fa fa-reply"
           ></i>
@@ -35,24 +45,27 @@ const ActionBtn = ({ undoFun, redoFun, replayFun, history, activeIndex }) => {
           background: "transparent",
           border: "none",
         }}
-        onClick={() => replayFun()}
+        onClick={() => {
+          setPlay(!play);
+          replayFun();
+        }}
       >
         <i
           style={{
             fontSize: "45px",
             color: "white",
           }}
-          className="fa fa-play"
+          className={play ? "fa fa-pause-circle" : "fa fa-play"}
         ></i>
       </button>
       <button
         style={{
-          cursor: activeIndex === -1 ? "not-allowed" : "pointer",
+          cursor: isActiveRedo ? "pointer" : "not-allowed",
           background: "transparent",
           border: "none",
         }}
         onClick={() => {
-          if (activeIndex >= 0 && history?.length > 1) {
+          if (isActiveRedo) {
             redoFun();
           }
         }}
@@ -60,7 +73,7 @@ const ActionBtn = ({ undoFun, redoFun, replayFun, history, activeIndex }) => {
         <i
           style={{
             fontSize: "45px",
-            color: activeIndex === -1 ? "grey" : "white",
+            color: isActiveRedo ? "white" : "grey",
             transform: "scaleX(-1)",
           }}
           className="fa fa-reply"

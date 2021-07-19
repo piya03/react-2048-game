@@ -70,12 +70,24 @@ export function swipeLeftFun({
       }
     }
   }
-  setCurrentScore((prev) => prev + score);
+  // setCurrentScore((prev) => prev + score);
 
   if (JSON.stringify(oldGrid) !== JSON.stringify(newArray)) {
     addTwoOrFourNum(newArray);
-    setHistory((prev) => [...prev, [...newArray]]);
-    setMove((prev) => prev + moveCount);
+    // setHistory((prev) => [...prev, [...newArray]]);
+    // setMove((prev) => prev + moveCount);
+
+    setHistory((prev) => {
+      let len = prev.length - 1;
+      return [
+        ...prev,
+        {
+          position: [...newArray],
+          moves: prev[len]?.moves + moveCount,
+          scores: prev[len]?.scores + score,
+        },
+      ];
+    });
   }
   if (IsGridFull) {
     return newArray;
@@ -136,12 +148,26 @@ export function swipeRightFun({
       }
     }
   }
-  setCurrentScore((prev) => prev + score);
+  // setCurrentScore((prev) => prev + score);
 
   if (JSON.stringify(newArray) !== JSON.stringify(oldData)) {
     addTwoOrFourNum(newArray);
-    setHistory((prev) => [...prev, [...newArray]]);
-    setMove((prev) => prev + moveCount);
+    // setHistory((prev) => [...prev, [...newArray]]);
+    // setMove((prev) => prev + moveCount);
+    setHistory((prev) => {
+      console.log("🚀 setHistory ~ prev1", prev);
+      console.log("🚀 setHistory ~ prev2len", prev[prev.length - 1]);
+
+      let len = prev.length - 1;
+      return [
+        ...prev,
+        {
+          position: [...newArray],
+          moves: prev[len]?.moves + moveCount,
+          scores: prev[len]?.scores + score,
+        },
+      ];
+    });
   }
 
   if (IsGridFull) {
@@ -203,12 +229,23 @@ export function swipeDownFun({
       }
     }
   }
-  setCurrentScore((prev) => prev + score);
+  //setCurrentScore((prev) => prev + score);
 
   if (JSON.stringify(oldData) !== JSON.stringify(newArray)) {
     addTwoOrFourNum(newArray);
-    setHistory((prev) => [...prev, [...newArray]]);
-    setMove((prev) => prev + moveCount);
+    // setHistory((prev) => [...prev, [...newArray]]);
+    // setMove((prev) => prev + moveCount);
+    setHistory((prev) => {
+      let len = prev.length - 1;
+      return [
+        ...prev,
+        {
+          position: [...newArray],
+          moves: prev[len]?.moves + moveCount,
+          scores: prev[len]?.scores + score,
+        },
+      ];
+    });
   }
   if (IsGridFull) {
     return newArray;
@@ -269,12 +306,24 @@ export function swipeUpFun({
       }
     }
   }
-  setCurrentScore((prev) => prev + score);
+  // setCurrentScore((prev) => prev + score);
 
   if (JSON.stringify(oldData) !== JSON.stringify(newArray)) {
     addTwoOrFourNum(newArray);
-    setHistory((prev) => [...prev, [...newArray]]);
-    setMove((prev) => prev + moveCount);
+    // setHistory((prev) => [...prev, [...newArray]]);
+    //setMove((prev) => prev + moveCount);
+
+    setHistory((prev) => {
+      let len = prev.length - 1;
+      return [
+        ...prev,
+        {
+          position: [...newArray],
+          moves: prev[len]?.moves + moveCount,
+          scores: prev[len]?.scores + score,
+        },
+      ];
+    });
   }
   if (IsGridFull) {
     return newArray;

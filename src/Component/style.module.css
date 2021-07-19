@@ -4,11 +4,11 @@
     flex-direction: column;
     background: #765f8c;
     align-items: center;
-
     justify-content: center;
     max-width: 600px;
     height: 80vh;
     margin: auto;
+    color: white;
 
 }
 .blockContainer{
@@ -20,6 +20,7 @@
     flex-direction: column;
     background:#fcf9ef;
     padding: 20px;
+    margin-bottom: 5px;
 }
 
 /* //score css */

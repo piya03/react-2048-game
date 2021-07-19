@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import styles from "./style.module.css";
 
-const Score = ({ currentScore, setShowModal }) => {
+const Score = ({ setShowModal, history }) => {
   const { scoreBox, score_align, info, heading, score, scoreContainer, reset } =
     styles;
+
+  const currentScore = history[history.length - 1]?.scores;
 
   let getBestScoreFromLocal = JSON.parse(localStorage.getItem("info")) || {};
 
