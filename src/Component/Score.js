@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "./style.module.css";
 
-const Score = ({ setShowModal, history }) => {
+const Score = ({ setShowModal, history, replayData, mode }) => {
   const { scoreBox, score_align, info, heading, score, scoreContainer, reset } =
     styles;
 
@@ -25,7 +25,9 @@ const Score = ({ setShowModal, history }) => {
             <div>
               <span>Score</span>
               <span className={`${score}`}>
-                {getBestScoreAndScore?.scores || currentScore}
+                {mode === "replay"
+                  ? replayData?.scores
+                  : getBestScoreAndScore?.scores || currentScore}
               </span>
             </div>
             <div>

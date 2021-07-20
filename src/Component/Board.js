@@ -63,24 +63,29 @@ const Board = () => {
     isDataFromLocal
   );
   const [gameOver, setGameOver] = useState(false);
-
   const [showModal, setShowModal] = useState(false);
 
-  const [play, setPlay] = useState(false);
+  const [mode, setMode] = useState("play"); // replay or play
+  console.log("🚀 ~ file: Board.js ~ line 223 ~ Board ~ mode", mode);
 
+  const [replayData, setReplayData] = useState(null);
+  console.log(
+    "🚀 ~ file: Board.js ~ line 226 ~ Board ~ replayData",
+    replayData
+  );
+
+  const [timerId, setTimerId] = useState(null);
+  // [1,2,3]
   function setLocalStorage() {
     let lastHistoryData = history.length - 1;
     localStorage.setItem(
       "info",
       JSON.stringify({
+        ...lastHistoryData,
         bestScore:
           history[lastHistoryData]?.scores > getInfoFromLocal?.bestScore
             ? history[lastHistoryData]?.scores
             : getInfoFromLocal?.bestScore,
-
-        position: history[lastHistoryData]?.position,
-        moves: history[lastHistoryData]?.moves,
-        scores: history[lastHistoryData]?.scores,
       })
     );
   }
@@ -91,17 +96,36 @@ const Board = () => {
   const RIGHT_ARROW = 39;
 
   function initializeFun() {
-    let copyData =
-      getInfoFromLocal?.position ||
-      _.cloneDeep([
+    let copyData = getInfoFromLocal?.position;
+
+    if (!copyData || !copyData?.length) {
+      copyData = _.cloneDeep([
         [0, 0, 0, 0],
         [0, 0, 0, 0],
         [0, 0, 0, 0],
         [0, 0, 0, 0],
       ]);
-    addTwoOrFourNum(copyData);
-    addTwoOrFourNum(copyData);
+    }
+
+    console.log(
+      "🚀 ~ file: Board.js ~ line 104 ~ initializeFun ~ getInfoFromLocal",
+      getInfoFromLocal?.position
+    );
+    if (
+      getInfoFromLocal?.position?.length === 0 ||
+      !getInfoFromLocal?.position
+    ) {
+      addTwoOrFourNum(copyData);
+      addTwoOrFourNum(copyData);
+    }
+    // addTwoOrFourNum(copyData);
+    // addTwoOrFourNum(copyData);
     setData(copyData);
+    console.log(
+      "🚀 ~ file: Board.js ~ line 127 ~ initializeFun ~ copyData",
+      copyData
+    );
+
     setHistory((prev) => [
       {
         position: [...copyData],
@@ -112,6 +136,7 @@ const Board = () => {
   }
 
   function handleKeyDown(e) {
+    if (mode === "replay") return;
     switch (e.keyCode) {
       case UP_ARROW:
         swipeUpFun({
@@ -162,7 +187,7 @@ const Board = () => {
     let historyLen = history.length;
 
     if (historyLen === 1) return;
-    if (historyLen > 1 && !undoedState) {
+    if (mode === "play" && historyLen > 1 && !undoedState) {
       const undoedElem = history[historyLen - 1];
 
       setundoedState(undoedElem);
@@ -179,7 +204,7 @@ const Board = () => {
   function redoFun() {
     let historyLen = history.length;
 
-    if (historyLen >= 1 && undoedState) {
+    if (mode === "play" && historyLen >= 1 && undoedState) {
       let copyHistory = _.cloneDeep(history);
 
       const newHistory = [
@@ -203,42 +228,34 @@ const Board = () => {
     }
   }
 
-  function replayFun(params) {
-    console.log("replay");
-    const newHistory = _.cloneDeep(history);
-    // for (let i = 0; i < history.length; i++) {
-    //   setTimeout(() => {
-    //     console.log(i, "let see reply");
-    //   }, 2000);
-    // }
+  function startReplay(index, history) {
+    // setReplayData(history[index].position);
 
-    for (let i = 1; i < history.length; i++) {
-      function callReplay(x) {
-        setTimeout(() => {
-          setData([...newHistory[newHistory.length - 1].position]);
-
-          setData(history[i - 1]?.position);
-
-          // setHistory((prev) => {
-          //   return [
-          //     {
-          //       position: history[i - 1]?.position,
-          //       moves: prev[i - 1]?.moves,
-          //       scores: prev[i - 1]?.scores,
-          //     },
-          //   ];
-          // });
-
-          console.log(x, "let s ee reply");
-        }, x * 2000);
-      }
-      callReplay(i);
+    setReplayData({
+      position: history[index].position,
+      moves: history[index].moves,
+      scores: history[index].scores,
+    });
+    if (index === history.length - 1) {
+      setMode("play");
+      return;
     }
+
+    const timerNew = setTimeout(() => {
+      startReplay(index + 1, history);
+    }, 2000);
+    setTimerId(timerNew);
+  }
+
+  function replayFun(index = 0) {
+    setMode("replay");
+    startReplay(index, history);
   }
 
   function resetGameFun() {
     setShowModal(false);
     setGameOver(false);
+    setReplayData(null);
     const emptyData = [
       [0, 0, 0, 0],
       [0, 0, 0, 0],
@@ -266,12 +283,18 @@ const Board = () => {
             ? history[lastHistoryData]?.scores
             : getInfoFromLocal?.bestScore,
 
-        position: 0,
+        position: [],
         moves: 0,
         scores: 0,
       })
     );
   }
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [timerId]);
 
   useEffect(() => {
     initializeFun();
@@ -282,6 +305,21 @@ const Board = () => {
   }, [history]);
 
   useEvent("keydown", handleKeyDown);
+
+  function finalDataFun() {
+    if (mode === "replay") {
+      return replayData?.position;
+    }
+    return data;
+  }
+  const finalDataToRender = React.useMemo(
+    () => finalDataFun(),
+    [mode, data, replayData]
+  );
+  console.log(
+    "🚀 ~ file: Board.js ~ line 308 ~ Board ~ finalDataToRender",
+    finalDataToRender
+  );
 
   return (
     <>
@@ -302,10 +340,15 @@ const Board = () => {
       )}
       <div className={`${container}`}>
         <div className={`${innerContainer}`}>
-          <Score history={history} setShowModal={setShowModal} />
+          <Score
+            history={history}
+            setShowModal={setShowModal}
+            replayData={replayData}
+            mode={mode}
+          />
           <div className={`${bgColor}`}>
-            {data &&
-              data?.map((eachRow, index) => {
+            {finalDataToRender &&
+              finalDataToRender?.map((eachRow, index) => {
                 return (
                   <div key={index} className={`${blockContainer}`}>
                     {eachRow?.map((digit, index) => {
@@ -316,7 +359,12 @@ const Board = () => {
               })}{" "}
           </div>
         </div>
-        <div>moves {history[history?.length - 1]?.moves}</div>
+        <div>
+          moves{" "}
+          {mode === "replay"
+            ? replayData?.moves
+            : history[history?.length - 1]?.moves}
+        </div>
         <ActionBtn
           undoFun={undoFun}
           redoFun={redoFun}
@@ -324,8 +372,7 @@ const Board = () => {
           history={history}
           isActiveUndo={history.length > 1 && !undoedState}
           isActiveRedo={undoedState}
-          play={play}
-          setPlay={setPlay}
+          mode={mode}
         />
       </div>
     </>

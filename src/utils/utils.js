@@ -10,7 +10,20 @@ export function addTwoOrFourNum(newGrid) {
     }
 
     let randomNum1 = Math.floor(Math.random() * 4);
+    console.log(
+      "🚀 ~ file: utils.js ~ line 13 ~ addTwoOrFourNum ~ randomNum1",
+      randomNum1
+    );
     let randomNum2 = Math.floor(Math.random() * 4);
+    console.log(
+      "🚀 ~ file: utils.js ~ line 15 ~ addTwoOrFourNum ~ randomNum2",
+      randomNum2
+    );
+
+    console.log(
+      "🚀 ~ file: utils.js ~ line 26 ~ addTwoOrFourNum ~ newGrid",
+      newGrid
+    );
 
     if (newGrid[randomNum1][randomNum2] === 0) {
       newGrid[randomNum1][randomNum2] = Math.random() > 0.5 ? 2 : 4;

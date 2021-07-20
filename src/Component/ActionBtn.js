@@ -8,17 +8,16 @@ const ActionBtn = ({
   history,
   isActiveUndo,
   isActiveRedo,
-  play,
-  setPlay,
+
+  mode,
 }) => {
   const { actionBtns } = styles;
 
-  // const isActiveRedo = !isActiveUndo && history.length > 1;
   return (
     <div className={`${actionBtns}`}>
       <button
         style={{
-          cursor: isActiveUndo ? "pointer" : "not-allowed",
+          cursor: isActiveUndo && mode === "play" ? "pointer" : "not-allowed",
           background: "transparent",
           border: "none",
         }}
@@ -33,7 +32,7 @@ const ActionBtn = ({
           <i
             style={{
               fontSize: "45px",
-              color: isActiveUndo ? "white" : "grey",
+              color: isActiveUndo && mode === "play" ? "white" : "grey",
             }}
             className="fa fa-reply"
           ></i>
@@ -41,26 +40,25 @@ const ActionBtn = ({
       </button>
       <button
         style={{
-          cursor: "pointer",
+          cursor: history?.length > 1 ? "pointer" : "not-allowed",
           background: "transparent",
           border: "none",
         }}
         onClick={() => {
-          // setPlay(!play);
           replayFun();
         }}
       >
         <i
           style={{
             fontSize: "45px",
-            color: "white",
+            color: history?.length > 1 ? "white" : "grey",
           }}
-          className={play ? "fa fa-pause-circle" : "fa fa-play"}
+          className={mode === "replay" ? "fa fa-pause-circle" : "fa fa-play"}
         ></i>
       </button>
       <button
         style={{
-          cursor: isActiveRedo ? "pointer" : "not-allowed",
+          cursor: isActiveRedo && mode === "play" ? "pointer" : "not-allowed",
           background: "transparent",
           border: "none",
         }}
@@ -73,7 +71,7 @@ const ActionBtn = ({
         <i
           style={{
             fontSize: "45px",
-            color: isActiveRedo ? "white" : "grey",
+            color: isActiveRedo && mode === "play" ? "white" : "grey",
             transform: "scaleX(-1)",
           }}
           className="fa fa-reply"
