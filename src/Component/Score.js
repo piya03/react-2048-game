@@ -13,7 +13,7 @@ const Score = ({ setShowModal, history, replayData, mode }) => {
     moves: 0,
     scores: 0,
   };
-  console.log(" ~ getBestScoreAndScore", getBestScoreAndScore?.scores);
+  console.log(" ~ getBestScoreAndScore", getBestScoreAndScore);
 
   return (
     <div>

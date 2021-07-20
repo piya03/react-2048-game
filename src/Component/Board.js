@@ -76,16 +76,19 @@ const Board = () => {
 
   const [timerId, setTimerId] = useState(null);
   // [1,2,3]
-  function setLocalStorage() {
-    let lastHistoryData = history.length - 1;
+  function setLocalStorageFun() {
+    let lastHistoryDataIndex = history.length - 1;
     localStorage.setItem(
       "info",
       JSON.stringify({
-        ...lastHistoryData,
         bestScore:
-          history[lastHistoryData]?.scores > getInfoFromLocal?.bestScore
-            ? history[lastHistoryData]?.scores
+          history[lastHistoryDataIndex]?.scores > getInfoFromLocal?.bestScore
+            ? history[lastHistoryDataIndex]?.scores
             : getInfoFromLocal?.bestScore,
+
+        position: history[lastHistoryDataIndex]?.position,
+        scores: history[lastHistoryDataIndex]?.scores,
+        moves: history[lastHistoryDataIndex]?.moves,
       })
     );
   }
@@ -107,10 +110,6 @@ const Board = () => {
       ]);
     }
 
-    console.log(
-      "🚀 ~ file: Board.js ~ line 104 ~ initializeFun ~ getInfoFromLocal",
-      getInfoFromLocal?.position
-    );
     if (
       getInfoFromLocal?.position?.length === 0 ||
       !getInfoFromLocal?.position
@@ -118,15 +117,10 @@ const Board = () => {
       addTwoOrFourNum(copyData);
       addTwoOrFourNum(copyData);
     }
-    // addTwoOrFourNum(copyData);
-    // addTwoOrFourNum(copyData);
-    setData(copyData);
-    console.log(
-      "🚀 ~ file: Board.js ~ line 127 ~ initializeFun ~ copyData",
-      copyData
-    );
 
-    setHistory((prev) => [
+    setData(copyData);
+
+    setHistory([
       {
         position: [...copyData],
         moves: getInfoFromLocal?.moves || 0,
@@ -268,19 +262,19 @@ const Board = () => {
     setHistory([
       {
         position: [...emptyData],
-        moves: getInfoFromLocal?.moves || 0,
-        scores: getInfoFromLocal?.scores || 0,
+        moves: 0,
+        scores: 0,
       },
     ]);
     setundoedState(null);
 
-    let lastHistoryData = history.length - 1;
+    let lastHistoryDataIndex = history.length - 1;
     localStorage.setItem(
       "info",
       JSON.stringify({
         bestScore:
-          history[lastHistoryData]?.scores > getInfoFromLocal?.bestScore
-            ? history[lastHistoryData]?.scores
+          history[lastHistoryDataIndex]?.scores > getInfoFromLocal?.bestScore
+            ? history[lastHistoryDataIndex]?.scores
             : getInfoFromLocal?.bestScore,
 
         position: [],
@@ -301,7 +295,8 @@ const Board = () => {
   }, []);
 
   useEffect(() => {
-    setLocalStorage();
+    console.log("okkkkkkkkkkkkkkkkkkkk");
+    setLocalStorageFun();
   }, [history]);
 
   useEvent("keydown", handleKeyDown);
