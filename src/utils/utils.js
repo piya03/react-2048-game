@@ -29,6 +29,7 @@ export function swipeLeftFun({
 }) {
   let oldGrid = data;
   let newArray = _.cloneDeep(data);
+  console.log("🚀 ~ file: utils.js ~ line 32 ~ newArray", newArray);
   let score = 0;
   let moveCount = 0;
   for (let i = 0; i < 4; i++) {
@@ -352,6 +353,11 @@ export function getColorFun(num) {
 //check game over fun
 
 export function checkGameOver({ data }) {
+  console.log("🚀 ~ file: utils.js ~ line 356 ~ checkGameOver ~ data", data);
+
+  if (!data || !data?.length) {
+    return false;
+  }
   let checker = swipeLeftFun({ data, IsGridFull: true });
 
   if (JSON.stringify(data) !== JSON.stringify(checker)) {

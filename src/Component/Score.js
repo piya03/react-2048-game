@@ -39,10 +39,10 @@ const Score = ({ setShowModal, history, replayData, mode }) => {
           </div>
           <div
             style={{
-              cursor: mode == GAME_MODES.play ? "pointer" : "not-allowed",
+              cursor: mode == GAME_MODES?.play ? "pointer" : "not-allowed",
             }}
             onClick={() => {
-              if (mode === GAME_MODES.play) {
+              if (mode === GAME_MODES?.play) {
                 setShowModal(true);
               }
             }}

@@ -26,6 +26,7 @@ import {
   LEFT_ARROW,
   RIGHT_ARROW,
   WIN_SCORE,
+  REPLAY_TIME,
 } from "../const";
 
 const Board = () => {
@@ -201,7 +202,7 @@ const Board = () => {
 
     const timerNew = setTimeout(() => {
       startReplay(index + 1, history);
-    }, 2000);
+    }, REPLAY_TIME);
     setTimerId(timerNew);
   }
 
