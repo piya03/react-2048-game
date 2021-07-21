@@ -1,7 +1,7 @@
-## Famous 2048 Game
+## Famous 2048 Game (Reactjs)
 
-Implemented using reactjs
 
+<p  align="center"><img  src="demoimages/game.png"  width="500"  align="center"></p>
 
 ## To Test winner
 
