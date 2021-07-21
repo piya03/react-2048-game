@@ -77,12 +77,13 @@ export function swipeLeftFun({
     setundoedState(null);
     setHistory((prev) => {
       let len = prev.length - 1;
+
       return [
         ...prev,
         {
           position: [...newArray],
-          moves: prev[len]?.moves + moveCount,
-          scores: prev[len]?.scores + score,
+          moves: (prev[len]?.moves || 0) + moveCount,
+          scores: (prev[len]?.scores || 0) + score,
         },
       ];
     });
@@ -151,12 +152,13 @@ export function swipeRightFun({
     setundoedState(null);
     setHistory((prev) => {
       let len = prev.length - 1;
+
       return [
         ...prev,
         {
           position: [...newArray],
-          moves: prev[len]?.moves + moveCount,
-          scores: prev[len]?.scores + score,
+          moves: (prev[len]?.moves || 0) + moveCount,
+          scores: (prev[len]?.scores || 0) + score,
         },
       ];
     });
@@ -230,8 +232,8 @@ export function swipeDownFun({
         ...prev,
         {
           position: [...newArray],
-          moves: prev[len]?.moves + moveCount,
-          scores: prev[len]?.scores + score,
+          moves: (prev[len]?.moves || 0) + moveCount,
+          scores: (prev[len]?.scores || 0) + score,
         },
       ];
     });
@@ -305,8 +307,8 @@ export function swipeUpFun({
         ...prev,
         {
           position: [...newArray],
-          moves: prev[len]?.moves + moveCount,
-          scores: prev[len]?.scores + score,
+          moves: (prev[len]?.moves || 0) + moveCount,
+          scores: (prev[len]?.scores || 0) + score,
         },
       ];
     });

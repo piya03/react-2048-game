@@ -298,6 +298,7 @@ const Board = () => {
     [mode, data, replayData]
   );
 
+  console.log("history", history);
   return (
     <>
       {showModal && (
@@ -354,7 +355,7 @@ const Board = () => {
           moves{" "}
           {mode === GAME_MODES.replay
             ? replayData?.moves
-            : history[history?.length - 1]?.moves}
+            : history[history?.length - 1]?.moves || 0}
         </div>
         <ActionBtn
           undoFun={undoFun}
