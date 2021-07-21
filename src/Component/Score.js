@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "./style.module.css";
-import { WIN_SCORE } from "../const";
+import { WIN_SCORE, GAME_MODES } from "../const";
 
 const Score = ({ setShowModal, history, replayData, mode }) => {
   const { scoreBox, score_align, info, heading, score, scoreContainer, reset } =
@@ -25,7 +25,7 @@ const Score = ({ setShowModal, history, replayData, mode }) => {
             <div>
               <span>Score</span>
               <span className={`${score}`}>
-                {mode === "replay"
+                {mode === GAME_MODES.replay
                   ? replayData?.scores
                   : getBestScoreAndScore?.scores || currentScore}
               </span>
@@ -37,7 +37,17 @@ const Score = ({ setShowModal, history, replayData, mode }) => {
               </span>{" "}
             </div>
           </div>
-          <div onClick={() => setShowModal(true)} className={`${reset}`}>
+          <div
+            style={{
+              cursor: mode == GAME_MODES.play ? "pointer" : "not-allowed",
+            }}
+            onClick={() => {
+              if (mode === GAME_MODES.play) {
+                setShowModal(true);
+              }
+            }}
+            className={`${reset}`}
+          >
             Reset
           </div>
         </div>

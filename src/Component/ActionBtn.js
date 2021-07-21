@@ -9,7 +9,6 @@ const ActionBtn = ({
   history,
   isActiveUndo,
   isActiveRedo,
-
   mode,
 }) => {
   const { actionBtns } = styles;

@@ -18,6 +18,7 @@ import {
   checkGameOver,
   checkWinningScore,
 } from "../utils/utils";
+
 import {
   GAME_MODES,
   UP_ARROW,
@@ -26,6 +27,7 @@ import {
   RIGHT_ARROW,
   WIN_SCORE,
 } from "../const";
+
 const Board = () => {
   const {
     container,
@@ -53,26 +55,17 @@ const Board = () => {
       ]
     );
   });
-
   const [undoedState, setundoedState] = useState(null);
-  console.log("dddddddddddata", data);
-
   const [history, setHistory] = useState([]);
-  console.log("🚀 hhhhhhhhhhhistory", history);
-
   const [showGameOverModal, setShowGameOverModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [winnerModal, setShowWinnerModal] = useState(false);
-
   const [mode, setMode] = useState(GAME_MODES.play); // replay or play
-  console.log("🚀 ~ file: Board.js ~ line 68 ~ Board ~ mode", mode);
-
   const [replayData, setReplayData] = useState(null);
-
   const [timerId, setTimerId] = useState(null);
-
-  const [activereplayIndex, setActiveReplayIndex] = useState(0);
   // [1,2,3]
+
+  //set In local Storage function
   function setLocalStorageFun() {
     const lastHistoryDataIndex = history.length - 1;
     localStorage.setItem(
@@ -91,9 +84,9 @@ const Board = () => {
     );
   }
 
+  //initialize Fun on first mount
   function initializeFun() {
     let copyData = getInfoFromLocal?.position;
-
     if (!copyData || !copyData?.length) {
       copyData = _.cloneDeep([
         [0, 0, 0, 0],
@@ -110,11 +103,11 @@ const Board = () => {
       addTwoOrFourNum(copyData);
       addTwoOrFourNum(copyData);
     }
-
     setData(copyData);
     setHistory([...getInfoFromLocal?.history]);
   }
 
+  //handle arrow key(up , down, left, right) function
   function handleKeyDown(e) {
     if (mode === GAME_MODES.replay) return;
     if (showGameOverModal) return;
@@ -157,36 +150,21 @@ const Board = () => {
     }
   }
 
-  useEffect(() => {
-    let checkWinner = checkWinningScore(data, WIN_SCORE);
-    if (checkWinner) {
-      setShowWinnerModal(true);
-    }
-
-    const isGameOver = checkGameOver({ data });
-    if (isGameOver) {
-      setShowGameOverModal(true);
-    }
-  }, [data]);
-
+  //undo function
   function undoFun() {
     const historyLen = history.length;
-
     if (historyLen === 1) return;
     if (mode === GAME_MODES.play && historyLen > 1 && !undoedState) {
       const undoedElem = history[historyLen - 1];
-
       setundoedState(undoedElem);
       const newHistory = _.cloneDeep(history);
-
       newHistory.splice(historyLen - 1);
-
       setHistory(newHistory);
-
       setData([...newHistory[newHistory.length - 1].position]);
     }
   }
 
+  //redo function
   function redoFun() {
     const historyLen = history.length;
 
@@ -203,7 +181,6 @@ const Board = () => {
       ];
 
       setHistory(newHistory);
-
       setData([...newHistory[newHistory.length - 1].position]);
       setundoedState(null);
     }
@@ -228,6 +205,7 @@ const Board = () => {
     setTimerId(timerNew);
   }
 
+  ///replay function
   function replayFun(index = 0) {
     if (mode === GAME_MODES.replay) {
       setTimerId(null);
@@ -238,6 +216,7 @@ const Board = () => {
     }
   }
 
+  //reset Game
   function resetGameFun() {
     setShowModal(false);
     setShowGameOverModal(false);
@@ -275,6 +254,19 @@ const Board = () => {
       })
     );
   }
+
+  //useEffect for gameover or winner
+  useEffect(() => {
+    let checkWinner = checkWinningScore(data, WIN_SCORE);
+    if (checkWinner) {
+      setShowWinnerModal(true);
+    }
+
+    const isGameOver = checkGameOver({ data });
+    if (isGameOver) {
+      setShowGameOverModal(true);
+    }
+  }, [data]);
 
   useEffect(() => {
     return () => {
