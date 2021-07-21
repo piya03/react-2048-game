@@ -3,6 +3,11 @@
 
 <p  align="center"><img  src="demoimages/game.png"  width="500"  align="center"></p>
 
+
+## Demo
+
+https://youthful-fermat-1d00cf.netlify.app/
+
 ## To Test winner
 
 you can change variable `WIN_SCORE` in `src/const.js` to change the target number for win
