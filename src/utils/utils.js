@@ -4,26 +4,14 @@ import * as _ from "lodash";
 export function addTwoOrFourNum(newGrid) {
   let added = false;
   let gridFull = false;
+
   while (!added) {
     if (gridFull) {
       break;
     }
 
     let randomNum1 = Math.floor(Math.random() * 4);
-    console.log(
-      "🚀 ~ file: utils.js ~ line 13 ~ addTwoOrFourNum ~ randomNum1",
-      randomNum1
-    );
     let randomNum2 = Math.floor(Math.random() * 4);
-    console.log(
-      "🚀 ~ file: utils.js ~ line 15 ~ addTwoOrFourNum ~ randomNum2",
-      randomNum2
-    );
-
-    console.log(
-      "🚀 ~ file: utils.js ~ line 26 ~ addTwoOrFourNum ~ newGrid",
-      newGrid
-    );
 
     if (newGrid[randomNum1][randomNum2] === 0) {
       newGrid[randomNum1][randomNum2] = Math.random() > 0.5 ? 2 : 4;
@@ -34,10 +22,10 @@ export function addTwoOrFourNum(newGrid) {
 /////swipeLeft fun
 export function swipeLeftFun({
   data,
-  setData,
-  setHistory,
+  setData = () => {},
+  setHistory = () => {},
   IsGridFull = false,
-  setundoedState,
+  setundoedState = () => {},
 }) {
   let oldGrid = data;
   let newArray = _.cloneDeep(data);
@@ -109,10 +97,10 @@ export function swipeLeftFun({
 //swipe right
 export function swipeRightFun({
   data,
-  setData,
-  setHistory,
+  setData = () => {},
+  setHistory = () => {},
   IsGridFull = false,
-  setundoedState,
+  setundoedState = () => {},
 }) {
   let oldData = data;
   let newArray = _.cloneDeep(data);
@@ -162,9 +150,6 @@ export function swipeRightFun({
     addTwoOrFourNum(newArray);
     setundoedState(null);
     setHistory((prev) => {
-      console.log("🚀 setHistory ~ prev1", prev);
-      console.log("🚀 setHistory ~ prev2len", prev[prev.length - 1]);
-
       let len = prev.length - 1;
       return [
         ...prev,
@@ -188,10 +173,10 @@ export function swipeRightFun({
 
 export function swipeDownFun({
   data,
-  setData,
-  setHistory,
+  setData = () => {},
+  setHistory = () => {},
   IsGridFull = false,
-  setundoedState,
+  setundoedState = () => {},
 }) {
   let oldData = data;
   let newArray = _.cloneDeep(data);
@@ -262,10 +247,10 @@ export function swipeDownFun({
 
 export function swipeUpFun({
   data,
-  setData,
-  setHistory,
+  setData = () => {},
+  setHistory = () => {},
   IsGridFull = false,
-  setundoedState,
+  setundoedState = () => {},
 }) {
   let oldData = data;
   let newArray = _.cloneDeep(data);
@@ -365,3 +350,61 @@ export function getColorFun(num) {
 }
 
 //check game over fun
+
+export function checkGameOver({ data }) {
+  let checker = swipeLeftFun({ data, IsGridFull: true });
+
+  if (JSON.stringify(data) !== JSON.stringify(checker)) {
+    return false;
+  }
+
+  let checker2 = swipeRightFun({ data, IsGridFull: true });
+  if (JSON.stringify(data) !== JSON.stringify(checker2)) {
+    return false;
+  }
+
+  let checker3 = swipeUpFun({ data, IsGridFull: true });
+  if (JSON.stringify(data) !== JSON.stringify(checker3)) {
+    return false;
+  }
+
+  let checker4 = swipeDownFun({ data, IsGridFull: true });
+  if (JSON.stringify(data) !== JSON.stringify(checker4)) {
+    return false;
+  }
+
+  return true;
+}
+
+//check winning score
+
+export function checkWinningScore(arr, findNum) {
+  let res = [];
+  for (let i = 0; i < arr.length; i++) {
+    let elem = arr[i];
+    res = res.concat(elem);
+  }
+  res.sort((a, b) => a - b);
+  let final = binarySearch(res, findNum);
+  return final;
+}
+
+function binarySearch(arr, findNum) {
+  let len = arr.length;
+  let low = 0;
+  let high = len - 1;
+  let mid = low + Math.floor((high - low) / 2);
+
+  while (low <= high) {
+    if (arr[mid] === findNum) {
+      return true;
+    } else if (arr[mid] < findNum) {
+      low = mid + 1;
+      mid = low + Math.floor((high - low) / 2);
+    } else if (arr[mid] > findNum) {
+      high = mid - 1;
+      mid = low + Math.floor((high - low) / 2);
+    }
+  }
+  return false;
+}

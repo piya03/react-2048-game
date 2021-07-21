@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./style.module.css";
+import { GAME_MODES } from "../const";
 
 const ActionBtn = ({
   undoFun,
@@ -53,7 +54,9 @@ const ActionBtn = ({
             fontSize: "45px",
             color: history?.length > 1 ? "white" : "grey",
           }}
-          className={mode === "replay" ? "fa fa-pause-circle" : "fa fa-play"}
+          className={
+            mode === GAME_MODES.replay ? "fa fa-pause-circle" : "fa fa-play"
+          }
         ></i>
       </button>
       <button

@@ -5,6 +5,9 @@ import Block from "./Block";
 import Score from "./Score";
 import ActionBtn from "./ActionBtn";
 import Modal from "./Modal";
+import GameOver from "./GameOver";
+import Winner from "./Winner";
+
 import { useEvent } from "../Hooks/useEvent";
 import {
   addTwoOrFourNum,
@@ -12,8 +15,17 @@ import {
   swipeRightFun,
   swipeDownFun,
   swipeUpFun,
+  checkGameOver,
+  checkWinningScore,
 } from "../utils/utils";
-
+import {
+  GAME_MODES,
+  UP_ARROW,
+  DOWN_ARROW,
+  LEFT_ARROW,
+  RIGHT_ARROW,
+  WIN_SCORE,
+} from "../const";
 const Board = () => {
   const {
     container,
@@ -23,20 +35,13 @@ const Board = () => {
     modalYesNoContainer,
   } = styles;
 
-  let getInfoFromLocal = JSON.parse(localStorage.getItem("info")) || {
+  const getInfoFromLocal = JSON.parse(localStorage.getItem("info")) || {
     bestScore: 0,
     position: [],
+    history: [],
     moves: 0,
     scores: 0,
   };
-  console.log(
-    "🚀 ~ file: Board.js ~ line 51 ~ Board ~ getInfoFromLocal",
-    getInfoFromLocal
-  );
-  console.log(
-    "🚀getInfoFromLocal.positiongetInfoFromLocal.position",
-    getInfoFromLocal.position
-  );
 
   const [data, setData] = useState(() => {
     return (
@@ -50,34 +55,26 @@ const Board = () => {
   });
 
   const [undoedState, setundoedState] = useState(null);
-  console.log("🚀 ~uuuuuuuuuuuuuuuundo", undoedState);
   console.log("dddddddddddata", data);
 
   const [history, setHistory] = useState([]);
   console.log("🚀 hhhhhhhhhhhistory", history);
-  const [isDataFromLocal, setIsDataFromLocal] = useState(
-    getInfoFromLocal?.position || false
-  );
-  console.log(
-    "🚀 ~ file: Board.js ~ line 59 ~ Board ~ isDataFromLocal",
-    isDataFromLocal
-  );
-  const [gameOver, setGameOver] = useState(false);
-  const [showModal, setShowModal] = useState(false);
 
-  const [mode, setMode] = useState("play"); // replay or play
-  console.log("🚀 ~ file: Board.js ~ line 223 ~ Board ~ mode", mode);
+  const [showGameOverModal, setShowGameOverModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [winnerModal, setShowWinnerModal] = useState(false);
+
+  const [mode, setMode] = useState(GAME_MODES.play); // replay or play
+  console.log("🚀 ~ file: Board.js ~ line 68 ~ Board ~ mode", mode);
 
   const [replayData, setReplayData] = useState(null);
-  console.log(
-    "🚀 ~ file: Board.js ~ line 226 ~ Board ~ replayData",
-    replayData
-  );
 
   const [timerId, setTimerId] = useState(null);
+
+  const [activereplayIndex, setActiveReplayIndex] = useState(0);
   // [1,2,3]
   function setLocalStorageFun() {
-    let lastHistoryDataIndex = history.length - 1;
+    const lastHistoryDataIndex = history.length - 1;
     localStorage.setItem(
       "info",
       JSON.stringify({
@@ -89,14 +86,10 @@ const Board = () => {
         position: history[lastHistoryDataIndex]?.position,
         scores: history[lastHistoryDataIndex]?.scores,
         moves: history[lastHistoryDataIndex]?.moves,
+        history: history,
       })
     );
   }
-
-  const UP_ARROW = 38;
-  const DOWN_ARROW = 40;
-  const LEFT_ARROW = 37;
-  const RIGHT_ARROW = 39;
 
   function initializeFun() {
     let copyData = getInfoFromLocal?.position;
@@ -119,18 +112,13 @@ const Board = () => {
     }
 
     setData(copyData);
-
-    setHistory([
-      {
-        position: [...copyData],
-        moves: getInfoFromLocal?.moves || 0,
-        scores: getInfoFromLocal?.scores || 0,
-      },
-    ]);
+    setHistory([...getInfoFromLocal?.history]);
   }
 
   function handleKeyDown(e) {
-    if (mode === "replay") return;
+    if (mode === GAME_MODES.replay) return;
+    if (showGameOverModal) return;
+
     switch (e.keyCode) {
       case UP_ARROW:
         swipeUpFun({
@@ -145,7 +133,6 @@ const Board = () => {
           data,
           setData,
           setHistory,
-
           setundoedState,
         });
         break;
@@ -154,7 +141,6 @@ const Board = () => {
           data,
           setData,
           setHistory,
-
           setundoedState,
         });
         break;
@@ -163,7 +149,6 @@ const Board = () => {
           data,
           setData,
           setHistory,
-
           setundoedState,
         });
         break;
@@ -172,16 +157,23 @@ const Board = () => {
     }
   }
 
-  function checkGameOver(data) {
-    // check if all the cells are filled afte the update
-  }
-  ///function undoFun
+  useEffect(() => {
+    let checkWinner = checkWinningScore(data, WIN_SCORE);
+    if (checkWinner) {
+      setShowWinnerModal(true);
+    }
+
+    const isGameOver = checkGameOver({ data });
+    if (isGameOver) {
+      setShowGameOverModal(true);
+    }
+  }, [data]);
 
   function undoFun() {
-    let historyLen = history.length;
+    const historyLen = history.length;
 
     if (historyLen === 1) return;
-    if (mode === "play" && historyLen > 1 && !undoedState) {
+    if (mode === GAME_MODES.play && historyLen > 1 && !undoedState) {
       const undoedElem = history[historyLen - 1];
 
       setundoedState(undoedElem);
@@ -196,10 +188,10 @@ const Board = () => {
   }
 
   function redoFun() {
-    let historyLen = history.length;
+    const historyLen = history.length;
 
-    if (mode === "play" && historyLen >= 1 && undoedState) {
-      let copyHistory = _.cloneDeep(history);
+    if (mode === GAME_MODES.play && historyLen >= 1 && undoedState) {
+      const copyHistory = _.cloneDeep(history);
 
       const newHistory = [
         ...copyHistory,
@@ -210,30 +202,25 @@ const Board = () => {
         },
       ];
 
-      // const newHistory = [...history.position, undoedState];
-
-      //setHistory(newHistory);
-
       setHistory(newHistory);
 
       setData([...newHistory[newHistory.length - 1].position]);
       setundoedState(null);
-      // setActiveIndex(-1);
     }
   }
 
   function startReplay(index, history) {
-    // setReplayData(history[index].position);
+    if (index === history.length - 1) {
+      setMode(GAME_MODES.play);
+      return;
+    }
 
+    setMode(GAME_MODES.replay);
     setReplayData({
       position: history[index].position,
       moves: history[index].moves,
       scores: history[index].scores,
     });
-    if (index === history.length - 1) {
-      setMode("play");
-      return;
-    }
 
     const timerNew = setTimeout(() => {
       startReplay(index + 1, history);
@@ -242,13 +229,18 @@ const Board = () => {
   }
 
   function replayFun(index = 0) {
-    setMode("replay");
-    startReplay(index, history);
+    if (mode === GAME_MODES.replay) {
+      setTimerId(null);
+      setMode(GAME_MODES.play);
+    } else {
+      setMode(GAME_MODES.replay);
+      startReplay(index, history);
+    }
   }
 
   function resetGameFun() {
     setShowModal(false);
-    setGameOver(false);
+    setShowGameOverModal(false);
     setReplayData(null);
     const emptyData = [
       [0, 0, 0, 0],
@@ -268,7 +260,7 @@ const Board = () => {
     ]);
     setundoedState(null);
 
-    let lastHistoryDataIndex = history.length - 1;
+    const lastHistoryDataIndex = history.length - 1;
     localStorage.setItem(
       "info",
       JSON.stringify({
@@ -295,14 +287,15 @@ const Board = () => {
   }, []);
 
   useEffect(() => {
-    console.log("okkkkkkkkkkkkkkkkkkkk");
-    setLocalStorageFun();
+    if (history.length) {
+      setLocalStorageFun();
+    }
   }, [history]);
 
   useEvent("keydown", handleKeyDown);
 
   function finalDataFun() {
-    if (mode === "replay") {
+    if (mode === GAME_MODES.replay) {
       return replayData?.position;
     }
     return data;
@@ -310,10 +303,6 @@ const Board = () => {
   const finalDataToRender = React.useMemo(
     () => finalDataFun(),
     [mode, data, replayData]
-  );
-  console.log(
-    "🚀 ~ file: Board.js ~ line 308 ~ Board ~ finalDataToRender",
-    finalDataToRender
   );
 
   return (
@@ -332,6 +321,20 @@ const Board = () => {
             </span>
           </div>
         </Modal>
+      )}
+      {showGameOverModal && (
+        <GameOver
+          showGameOverModal={true}
+          setShowGameOverModal={setShowGameOverModal}
+          resetGameFun={resetGameFun}
+        />
+      )}
+      {winnerModal && (
+        <Winner
+          winnerModal={true}
+          setShowWinnerModal={setShowWinnerModal}
+          resetGameFun={resetGameFun}
+        />
       )}
       <div className={`${container}`}>
         <div className={`${innerContainer}`}>
@@ -356,7 +359,7 @@ const Board = () => {
         </div>
         <div>
           moves{" "}
-          {mode === "replay"
+          {mode === GAME_MODES.replay
             ? replayData?.moves
             : history[history?.length - 1]?.moves}
         </div>

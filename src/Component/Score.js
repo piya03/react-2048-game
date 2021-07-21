@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styles from "./style.module.css";
+import { WIN_SCORE } from "../const";
 
 const Score = ({ setShowModal, history, replayData, mode }) => {
   const { scoreBox, score_align, info, heading, score, scoreContainer, reset } =
@@ -13,12 +14,11 @@ const Score = ({ setShowModal, history, replayData, mode }) => {
     moves: 0,
     scores: 0,
   };
-  console.log(" ~ getBestScoreAndScore", getBestScoreAndScore);
 
   return (
     <div>
       <div className={`${scoreBox}`}>
-        <div className={`${heading}`}>2048</div>
+        <div className={`${heading}`}>{WIN_SCORE}</div>
 
         <div className={`${scoreContainer}`}>
           <div className={`${score_align}`}>
