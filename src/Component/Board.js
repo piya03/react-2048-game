@@ -9,6 +9,7 @@ import GameOver from "./GameOver";
 import Winner from "./Winner";
 
 import { useEvent } from "../Hooks/useEvent";
+
 import {
   addTwoOrFourNum,
   swipeLeftFun,
@@ -58,12 +59,23 @@ const Board = () => {
   });
   const [undoedState, setundoedState] = useState(null);
   const [history, setHistory] = useState([]);
+
+  const [future, setFuture] = useState([]);
+  console.log("🚀 ~ file: Board.js ~ line 66 ~ Board ~ future", future);
+
   const [showGameOverModal, setShowGameOverModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [winnerModal, setShowWinnerModal] = useState(false);
   const [mode, setMode] = useState(GAME_MODES.play); // replay or play
   const [replayData, setReplayData] = useState(null);
   const [timerId, setTimerId] = useState(null);
+  console.log("🚀 ~ file: Board.js ~ line 74 ~ Board ~ timerId", timerId);
+
+  const [playPauseIndex, setPlayPauseIndex] = useState(null);
+  console.log(
+    "🚀 ~ file: Board.js ~ line 70 ~ Board ~ playPauseIndex",
+    playPauseIndex
+  );
   // [1,2,3]
 
   //set In local Storage function
@@ -105,7 +117,9 @@ const Board = () => {
       addTwoOrFourNum(copyData);
     }
     setData(copyData);
-    setHistory([...getInfoFromLocal?.history]);
+    if (getInfoFromLocal) {
+      setHistory([...getInfoFromLocal?.history]);
+    }
   }
 
   //handle arrow key(up , down, left, right) function
@@ -119,6 +133,9 @@ const Board = () => {
           data,
           setData,
           setHistory,
+
+          setFuture,
+          future,
           setundoedState,
         });
         break;
@@ -127,6 +144,9 @@ const Board = () => {
           data,
           setData,
           setHistory,
+
+          setFuture,
+          future,
           setundoedState,
         });
         break;
@@ -135,6 +155,9 @@ const Board = () => {
           data,
           setData,
           setHistory,
+
+          setFuture,
+          future,
           setundoedState,
         });
         break;
@@ -143,6 +166,9 @@ const Board = () => {
           data,
           setData,
           setHistory,
+
+          setFuture,
+          future,
           setundoedState,
         });
         break;
@@ -154,50 +180,52 @@ const Board = () => {
   //undo function
   function undoFun() {
     const historyLen = history.length;
+
     if (historyLen === 1) return;
-    if (mode === GAME_MODES.play && historyLen > 1 && !undoedState) {
+    if (mode === GAME_MODES.play && historyLen > 1) {
       const undoedElem = history[historyLen - 1];
-      setundoedState(undoedElem);
+
+      setFuture([...future, undoedElem]);
       const newHistory = _.cloneDeep(history);
       newHistory.splice(historyLen - 1);
+
       setHistory(newHistory);
+
       setData([...newHistory[newHistory.length - 1].position]);
     }
   }
 
   //redo function
   function redoFun() {
-    const historyLen = history.length;
+    const futureLen = future.length;
+    if (futureLen === 0) return;
 
-    if (mode === GAME_MODES.play && historyLen >= 1 && undoedState) {
-      const copyHistory = _.cloneDeep(history);
+    if (mode === GAME_MODES.play && futureLen > 1) {
+      const copyFuture = _.cloneDeep(future);
 
-      const newHistory = [
-        ...copyHistory,
-        {
-          position: undoedState?.position,
-          moves: undoedState?.moves,
-          scores: undoedState?.scores,
-        },
-      ];
+      const redoElem = copyFuture[futureLen - 1];
 
-      setHistory(newHistory);
-      setData([...newHistory[newHistory.length - 1].position]);
+      copyFuture.splice(futureLen - 1);
+      setFuture(copyFuture);
+      setHistory([...history, redoElem]);
+
+      setData([...history[history?.length - 1].position]);
+
       setundoedState(null);
     }
   }
 
   function startReplay(index, history) {
-    if (index === history.length - 1) {
+    if (index === history.length) {
       setMode(GAME_MODES.play);
       return;
     }
 
     setMode(GAME_MODES.replay);
     setReplayData({
-      position: history[index].position,
-      moves: history[index].moves,
-      scores: history[index].scores,
+      position: history[index]?.position,
+      moves: history[index]?.moves,
+      scores: history[index]?.scores,
     });
 
     const timerNew = setTimeout(() => {
@@ -207,12 +235,17 @@ const Board = () => {
   }
 
   ///replay function
-  function replayFun(index = 0) {
+  function replayFun(index = playPauseIndex || 0) {
+    setPlayPauseIndex(replayData?.moves);
+
     if (mode === GAME_MODES.replay) {
+      clearTimeout(timerId);
       setTimerId(null);
+
       setMode(GAME_MODES.play);
     } else {
       setMode(GAME_MODES.replay);
+
       startReplay(index, history);
     }
   }
@@ -238,22 +271,15 @@ const Board = () => {
         scores: 0,
       },
     ]);
-    setundoedState(null);
 
-    const lastHistoryDataIndex = history.length - 1;
-    localStorage.setItem(
-      "info",
-      JSON.stringify({
-        bestScore:
-          history[lastHistoryDataIndex]?.scores > getInfoFromLocal?.bestScore
-            ? history[lastHistoryDataIndex]?.scores
-            : getInfoFromLocal?.bestScore,
-
-        position: [],
+    setFuture([
+      {
+        position: [...emptyData],
         moves: 0,
         scores: 0,
-      })
-    );
+      },
+    ]);
+    setundoedState(null);
   }
 
   //useEffect for gameover or winner
@@ -298,7 +324,6 @@ const Board = () => {
     [mode, data, replayData]
   );
 
-  console.log("history", history);
   return (
     <>
       {showModal && (
@@ -352,18 +377,16 @@ const Board = () => {
           </div>
         </div>
         <div>
-          moves{" "}
-          {mode === GAME_MODES.replay
-            ? replayData?.moves
-            : history[history?.length - 1]?.moves || 0}
+          moves {replayData?.moves || history[history?.length - 1]?.moves || 0}
         </div>
         <ActionBtn
           undoFun={undoFun}
           redoFun={redoFun}
           replayFun={replayFun}
+          replayData={replayData}
           history={history}
           isActiveUndo={history.length > 1 && !undoedState}
-          isActiveRedo={undoedState}
+          isActiveRedo={future.length > 1}
           mode={mode}
         />
       </div>

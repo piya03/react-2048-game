@@ -38,6 +38,7 @@ const ActionBtn = ({
           ></i>
         </span>
       </button>
+
       <button
         style={{
           cursor: history?.length > 1 ? "pointer" : "not-allowed",
@@ -58,6 +59,18 @@ const ActionBtn = ({
           }
         ></i>
       </button>
+
+      {/* {history?.length > 1 && (
+        <button
+          onClick={() => {
+            replayFun();
+          }}
+        >
+          {" "}
+          play/pause
+        </button>
+      )} */}
+
       <button
         style={{
           cursor: isActiveRedo && mode === "play" ? "pointer" : "not-allowed",

@@ -25,9 +25,10 @@ const Score = ({ setShowModal, history, replayData, mode }) => {
             <div>
               <span>Score</span>
               <span className={`${score}`}>
-                {mode === GAME_MODES.replay
-                  ? replayData?.scores
-                  : getBestScoreAndScore?.scores || currentScore || 0}
+                {replayData?.scores ||
+                  getBestScoreAndScore?.scores ||
+                  currentScore ||
+                  0}
               </span>
             </div>
             <div>
